@@ -24,17 +24,10 @@ public class Sistema {
 	public static String[] Professores_email = new String[0];
 	public static String[] Pesquisadores_nome = new String[0];
 	public static String[] Pesquisadores_email = new String[0];
-	public static String Admin_nome = "";
 
 	public static String[] Recursos_nome = new String[0];
 	public static Date[][] Recursos_dataInicio = new Date[0][0];
 	public static Date[][] Recursos_dataTermino = new Date[0][0];
-	public static int[][] Recursos_dataInicioDia = new int[0][0];
-	public static int[][] Recursos_dataInicioMes = new int[0][0];
-	public static int[][] Recursos_dataInicioAno = new int[0][0];
-	public static int[][] Recursos_dataTerminoDia = new int[0][0];
-	public static int[][] Recursos_dataTerminoMes = new int[0][0];
-	public static int[][] Recursos_dataTerminoAno = new int[0][0];
 	public static int[][] Recursos_alocacaoID = new int[0][0];
 
 	public static String[] Alocacao_status = new String[0];
@@ -149,7 +142,7 @@ public class Sistema {
         Pesquisadores_email[qntdPesquisadores-1] = email.toLowerCase();
 	}
 
-	public void alocarRecurso(){
+	public void alocarRecurso() throws ParseException {
 	    System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\tAlocação de recurso\n");
 		Scanner scanner = new Scanner(System.in);
 		qntdTotalAlocacoes++;
@@ -158,60 +151,85 @@ public class Sistema {
         Alocacao_status = new String[qntdTotalAlocacoes];
         System.arraycopy(prevAlocStr, 0, Alocacao_status, 0, qntdTotalAlocacoes-1);
         Alocacao_status[qntdTotalAlocacoes-1] = "Em processo de alocação";
-/*
-		System.out.print("-Digite a data de inicio (dd/MM/yyyy HH:mm): ");
-        Date dataInicio = null;
-        while (dataInicio == null) {
-            String line = scanner.nextLine();
-            try {
-                dataInicio = format.parse(line);
-            } catch (ParseException e) {
-                System.out.println("Data inválida!");
-            }
-        }
-        System.out.print("-Digite a data de término (dd/MM/yyyy HH:mm): ");
-        Date dataTermino = null;
-        while (dataTermino == null) {
-            String line = scanner.nextLine();
-            try {
-                dataTermino = format.parse(line);
-            } catch (ParseException e) {
-                System.out.println("Data inválida!");
-            }
-        }
-*/
-        System.out.print("-Digite o dia do inicio: ");
-		int inicioDia = scanner.nextInt();
-		System.out.print("-Digite o mês do inicio: ");
-        int inicioMes = scanner.nextInt();
-		System.out.print("-Digite o ano do inicio: ");
-        int inicioAno = scanner.nextInt();
-
-		System.out.print("-Digite o dia do termino: ");
-        int terminoDia = scanner.nextInt();
-		System.out.print("-Digite o mês do termino: ");
-        int terminoMes = scanner.nextInt();
-		System.out.print("-Digite o ano do termino: ");
-        int terminoAno = scanner.nextInt();
 
         boolean alocacao;
-        int recursoID;
+        int recursoID, responsavelID = -1;
+        String responsavelTipo = "";
+        Date dataInicio, dataTermino;
 		do{
+            System.out.print("-Digite a data de inicio (dd/MM/yyyy HH:mm): ");
+            String line = scanner.nextLine();
+            dataInicio = format.parse(line);
+            System.out.print("-Digite a data de término (dd/MM/yyyy HH:mm): ");
+            line = scanner.nextLine();
+            dataTermino = format.parse(line);
+
             alocacao = false;
 		    System.out.print("-Digite o ID do recurso: ");
 			recursoID = scanner.nextInt();
+			scanner.nextLine();
 
 			if(recursoID >= qntdRecursos){
 			    System.out.println("Recurso inexistente!");
 			    alocacao = true;
             }
             if(!alocacao) {
-                int qntdAlocacoes = Recursos_dataInicioAno[recursoID].length;
+                int qntdAlocacoes = Recursos_dataInicio[recursoID].length;
                 for (int i = 0; i < qntdAlocacoes; i++) {
-                    if ((Recursos_dataInicioAno[recursoID][i] <= inicioAno && inicioAno <= Recursos_dataTerminoAno[recursoID][i]) || (Recursos_dataInicioAno[recursoID][i] <= terminoAno && terminoAno <= Recursos_dataTerminoAno[recursoID][i])) {
-                        if ((Recursos_dataInicioMes[recursoID][i] <= inicioMes && inicioMes <= Recursos_dataTerminoMes[recursoID][i]) || (Recursos_dataInicioMes[recursoID][i] <= terminoMes && terminoMes <= Recursos_dataTerminoMes[recursoID][i])) {
-                            if ((Recursos_dataInicioDia[recursoID][i] <= inicioDia && inicioDia <= Recursos_dataTerminoDia[recursoID][i]) || (Recursos_dataInicioDia[recursoID][i] <= terminoDia && terminoDia <= Recursos_dataTerminoDia[recursoID][i])) {
-                                System.out.println("Recurso indisponivel\n");
+                    if ((Recursos_dataInicio[recursoID][i].before(dataInicio) && Recursos_dataTermino[recursoID][i].after(dataInicio))
+                    || (Recursos_dataInicio[recursoID][i].before(dataTermino) && Recursos_dataTermino[recursoID][i].after(dataTermino))) {
+                        System.out.println("Recurso indisponivel\n");
+                        alocacao = true;
+                    }
+                }
+            }
+
+            if(!alocacao) {
+                System.out.print("-Digite o ID do responsavel pelo recurso: ");
+                responsavelID = scanner.nextInt();
+                scanner.nextLine();
+                System.out.print("-Digite a classificação do responsavel pelo recurso: ");
+                responsavelTipo = scanner.nextLine();
+
+                switch (responsavelTipo.toLowerCase()) {
+                    case "professor":
+                        if (responsavelID >= qntdProfessores) {
+                            System.out.println("Professor inexistente!");
+                            alocacao = true;
+                        }
+                        break;
+                    case "mestrando":
+                        if (responsavelID >= qntdMestrandos) {
+                            System.out.println("Mestrando inexistente!");
+                            alocacao = true;
+                        }
+                        break;
+                    case "doutorando":
+                        if (responsavelID >= qntdDoutorandos) {
+                            System.out.println("Doutorando inexistente!");
+                            alocacao = true;
+                        }
+                        break;
+                    default:
+                        System.out.println(responsavelTipo + " não tem autorização para alocar recurso.");
+                        alocacao = true;
+                }
+
+                if (!alocacao) {
+                    for (int i = 0; i < qntdTotalAlocacoes - 1; i++) {
+                        if (Alocacao_responsavelID[i] == responsavelID && Alocacao_responsavelTipo[i].equals(responsavelTipo.toUpperCase())) {
+                            if (Alocacao_status[i].equals("Alocado")) {
+                                int qntdAlocacoes = Recursos_dataInicio[Alocacao_recursoID[i]].length;
+                                for (int j = 0; j < qntdAlocacoes; j++) {
+
+                                    if ((Recursos_dataInicio[Alocacao_recursoID[i]][j].before(dataInicio) && Recursos_dataTermino[Alocacao_recursoID[i]][j].after(dataInicio))
+                                    || (Recursos_dataInicio[Alocacao_recursoID[i]][j].before(dataTermino) && Recursos_dataTermino[Alocacao_recursoID[i]][j].after(dataTermino))) {
+                                        System.out.println("Esta pessoa já alocou um recurso neste mesmo horário!");
+                                        alocacao = true;
+                                    }
+                                }
+                            } else if (Alocacao_status[i].equals("Em progresso")) {
+                                System.out.println("Esta pessoa já alocou um recurso e está em progresso!");
                                 alocacao = true;
                             }
                         }
@@ -224,7 +242,7 @@ public class Sistema {
 		System.arraycopy(prevAloc, 0, Alocacao_recursoID, 0, qntdTotalAlocacoes-1);
 		Alocacao_recursoID[qntdTotalAlocacoes-1] = recursoID;
 
-		int qntdAlocacoesNova = Recursos_dataInicioDia[recursoID].length+1;
+		int qntdAlocacoesNova = Recursos_dataInicio[recursoID].length+1;
 		prevAloc = Alocacao_recursoIDIdx;
 		Alocacao_recursoIDIdx = new int[qntdTotalAlocacoes];
 		System.arraycopy(prevAloc, 0, Alocacao_recursoIDIdx, 0, qntdTotalAlocacoes-1);
@@ -235,90 +253,16 @@ public class Sistema {
 		System.arraycopy(prevAloc, 0, Recursos_alocacaoID[recursoID], 0, qntdAlocacoesNova-1);
         Recursos_alocacaoID[recursoID][qntdAlocacoesNova-1] = qntdTotalAlocacoes-1;
 
-		prevAloc = Recursos_dataInicioDia[recursoID];
-        Recursos_dataInicioDia[recursoID] = new int[qntdAlocacoesNova];
-        System.arraycopy(prevAloc, 0, Recursos_dataInicioDia[recursoID], 0, qntdAlocacoesNova-1);
-        Recursos_dataInicioDia[recursoID][qntdAlocacoesNova-1] = inicioDia;
-        prevAloc = Recursos_dataInicioMes[recursoID];
-        Recursos_dataInicioMes[recursoID] = new int[qntdAlocacoesNova];
-        System.arraycopy(prevAloc, 0, Recursos_dataInicioMes[recursoID], 0, qntdAlocacoesNova-1);
-        Recursos_dataInicioMes[recursoID][qntdAlocacoesNova-1] = inicioMes;
-        prevAloc = Recursos_dataInicioAno[recursoID];
-        Recursos_dataInicioAno[recursoID] = new int[qntdAlocacoesNova];
-        System.arraycopy(prevAloc, 0, Recursos_dataInicioAno[recursoID], 0, qntdAlocacoesNova-1);
-        Recursos_dataInicioAno[recursoID][qntdAlocacoesNova-1] = inicioAno;
+        Date[] prevAlocDate = Recursos_dataInicio[recursoID];
+        Recursos_dataInicio[recursoID] = new Date[qntdAlocacoesNova];
+        System.arraycopy(prevAlocDate, 0, Recursos_dataInicio[recursoID], 0, qntdAlocacoesNova-1);
+        Recursos_dataInicio[recursoID][qntdAlocacoesNova-1] = dataInicio;
 
-        prevAloc = Recursos_dataTerminoDia[recursoID];
-        Recursos_dataTerminoDia[recursoID] = new int[qntdAlocacoesNova];
-        System.arraycopy(prevAloc, 0, Recursos_dataTerminoDia[recursoID], 0, qntdAlocacoesNova-1);
-        Recursos_dataTerminoDia[recursoID][qntdAlocacoesNova-1] = terminoDia;
-        prevAloc = Recursos_dataTerminoMes[recursoID];
-        Recursos_dataTerminoMes[recursoID] = new int[qntdAlocacoesNova];
-        System.arraycopy(prevAloc, 0, Recursos_dataTerminoMes[recursoID], 0, qntdAlocacoesNova-1);
-        Recursos_dataTerminoMes[recursoID][qntdAlocacoesNova-1] = terminoMes;
-        prevAloc = Recursos_dataTerminoAno[recursoID];
-        Recursos_dataTerminoAno[recursoID] = new int[qntdAlocacoesNova];
-        System.arraycopy(prevAloc, 0, Recursos_dataTerminoAno[recursoID], 0, qntdAlocacoesNova-1);
-        Recursos_dataTerminoAno[recursoID][qntdAlocacoesNova-1] = terminoAno;
+        prevAlocDate = Recursos_dataTermino[recursoID];
+        Recursos_dataTermino[recursoID] = new Date[qntdAlocacoesNova];
+        System.arraycopy(prevAlocDate, 0, Recursos_dataTermino[recursoID], 0, qntdAlocacoesNova-1);
+        Recursos_dataTermino[recursoID][qntdAlocacoesNova-1] = dataTermino;
 
-        int responsavelID;
-        String responsavelTipo;
-        do {
-            alocacao = false;
-            System.out.print("-Digite o ID do responsavel pelo recurso: ");
-            responsavelID = scanner.nextInt();
-            scanner.nextLine();
-            System.out.print("-Digite a classificação do responsavel pelo recurso: ");
-            responsavelTipo = scanner.nextLine();
-
-            switch (responsavelTipo.toLowerCase()){
-                case "professor":
-                    if(responsavelID >= qntdProfessores){
-                        System.out.println("Professor inexistente!");
-                        alocacao = true;
-                    }
-                    break;
-                case "mestrando":
-                    if(responsavelID >= qntdMestrandos){
-                        System.out.println("Mestrando inexistente!");
-                        alocacao = true;
-                    }
-                    break;
-                case "doutorando":
-                    if(responsavelID >= qntdDoutorandos){
-                        System.out.println("Doutorando inexistente!");
-                        alocacao = true;
-                    }
-                    break;
-                default:
-                    System.out.println(responsavelTipo + " não tem autorização para alocar recurso.");
-                    alocacao = true;
-            }
-
-            if(!alocacao) {
-                for (int i = 0; i < qntdTotalAlocacoes - 1; i++) {
-                    if (Alocacao_responsavelID[i] == responsavelID && Alocacao_responsavelTipo[i].equals(responsavelTipo)) {
-                        if (Alocacao_status[i].equals("Alocado")) {
-                            int qntdAlocacoes = Recursos_dataInicioAno[Alocacao_recursoID[i]].length;
-                            for (int j = 0; j < qntdAlocacoes; j++) {
-                                if ((Recursos_dataInicioAno[Alocacao_recursoID[i]][j] <= inicioAno && inicioAno <= Recursos_dataTerminoAno[Alocacao_recursoID[i]][j] &&
-                                        Recursos_dataInicioMes[Alocacao_recursoID[i]][j] <= inicioMes && inicioMes <= Recursos_dataTerminoMes[Alocacao_recursoID[i]][j] &&
-                                        Recursos_dataInicioDia[Alocacao_recursoID[i]][j] <= inicioDia && inicioDia <= Recursos_dataTerminoDia[Alocacao_recursoID[i]][j])
-                                        || (Recursos_dataInicioAno[Alocacao_recursoID[i]][j] <= terminoAno && terminoAno <= Recursos_dataTerminoAno[Alocacao_recursoID[i]][j] &&
-                                        Recursos_dataInicioMes[Alocacao_recursoID[i]][j] <= terminoMes && terminoMes <= Recursos_dataTerminoMes[Alocacao_recursoID[i]][j] &&
-                                        Recursos_dataInicioDia[Alocacao_recursoID[i]][j] <= terminoDia && terminoDia <= Recursos_dataTerminoDia[Alocacao_recursoID[i]][j])) {
-                                    System.out.println("Esta pessoa já alocou um recurso neste mesmo horário!");
-                                    alocacao = true;
-                                }
-                            }
-                        } else if (Alocacao_status[i].equals("Em progresso")) {
-                            System.out.println("Esta pessoa já alocou um recurso e está em progresso!");
-                            alocacao = true;
-                        }
-                    }
-                }
-            }
-        }while (alocacao);
         prevAloc = Alocacao_responsavelID;
         Alocacao_responsavelID = new int[qntdTotalAlocacoes];
         System.arraycopy(prevAloc, 0, Alocacao_responsavelID, 0, qntdTotalAlocacoes-1);
@@ -328,12 +272,32 @@ public class Sistema {
         System.arraycopy(prevAlocStr, 0, Alocacao_responsavelTipo, 0, qntdTotalAlocacoes-1);
 		Alocacao_responsavelTipo[qntdTotalAlocacoes-1] = responsavelTipo.toUpperCase();
 
-		System.out.print("-Digite o tipo de atividade: ");
-		String str = scanner.nextLine();
-		prevAlocStr = Alocacao_atividadeTipo;
+		String str;
+		do {
+		    alocacao = true;
+            System.out.print("-Digite o tipo de atividade: ");
+            str = scanner.nextLine();
+            switch (str.toLowerCase()){
+                case "apresentações":
+                    alocacao = false;
+                    break;
+                case "aula tradicional":
+                case "laboratório":
+                    if(responsavelTipo.toUpperCase().equals("PROFESSOR"))
+                        alocacao = false;
+                    else
+                        System.out.println("'"+ responsavelTipo.toUpperCase() +"' não tem autorização para alocar esse recurso!");
+                    break;
+                default:
+                    System.out.println("'"+ str +"' não é uma atividade válida! As atividades podem ser: 'Aula tradicional', 'Apresentações' ou 'Laboratório'.");
+                    break;
+            }
+        }while (alocacao);
+        prevAlocStr = Alocacao_atividadeTipo;
         Alocacao_atividadeTipo = new String[qntdTotalAlocacoes];
-        System.arraycopy(prevAlocStr, 0, Alocacao_atividadeTipo, 0, qntdTotalAlocacoes-1);
-		Alocacao_atividadeTipo[qntdTotalAlocacoes-1] = str;
+        System.arraycopy(prevAlocStr, 0, Alocacao_atividadeTipo, 0, qntdTotalAlocacoes - 1);
+        Alocacao_atividadeTipo[qntdTotalAlocacoes - 1] = str;
+
 		System.out.print("-Digite o titulo de atividade: ");
         str = scanner.nextLine();
         prevAlocStr = Alocacao_atividadeTitulo;
@@ -370,6 +334,7 @@ public class Sistema {
 
 		System.out.print("-Digite a quantidade de participantes: ");
 		int qntdParticipantes = scanner.nextInt();
+		scanner.nextLine();
         int[][] prevAlocIntMat = Alocacao_atividadeParticipantesID;
         Alocacao_atividadeParticipantesID = new int[qntdTotalAlocacoes][];
         System.arraycopy(prevAlocIntMat, 0, Alocacao_atividadeParticipantesID, 0, qntdTotalAlocacoes - 1);
@@ -379,6 +344,7 @@ public class Sistema {
                 registrando = false;
                 System.out.print("-Digite o ID do participante " + i + ": ");
                 int id = scanner.nextInt();
+                scanner.nextLine();
                 switch (Alocacao_atividadeParticipantesTipo[qntdTotalAlocacoes - 1].toLowerCase()) {
                     case "aluno":
                         if (id >= Alunos_nome.length) {
@@ -417,7 +383,7 @@ public class Sistema {
         for(int i = 0; i < qntdTotalAlocacoes; i++){
             if(!Alocacao_status[i].equals("Concluido")) {
                 int id = Alocacao_recursoID[i], idx = Alocacao_recursoIDIdx[i], responsavelID = Alocacao_responsavelID[i];
-                System.out.printf(" %02d | %02d/%02d/%04d | %s | %s | %s | %s\n", i, Recursos_dataInicioDia[id][idx], Recursos_dataInicioMes[id][idx], Recursos_dataInicioAno[id][idx], Alocacao_status[i], Recursos_nome[id], (Alocacao_responsavelTipo[i].toLowerCase().equals("professor") ? Professores_nome[responsavelID] : (Alocacao_responsavelTipo[i].toLowerCase().equals("mestrando") ? Mestrandos_nome[responsavelID] : Doutorandos_nome[responsavelID])), Alocacao_atividadeTitulo[i]);
+                System.out.printf(" %02d | %s | %s | %s | %s | %s\n", i, format.format(Recursos_dataInicio[id][idx]), Alocacao_status[i], Recursos_nome[id], (Alocacao_responsavelTipo[i].toLowerCase().equals("professor") ? Professores_nome[responsavelID] : (Alocacao_responsavelTipo[i].toLowerCase().equals("mestrando") ? Mestrandos_nome[responsavelID] : Doutorandos_nome[responsavelID])), Alocacao_atividadeTitulo[i]);
             }
         }
         System.out.println("-----------------------------------------------------------------------------------");
@@ -456,8 +422,8 @@ public class Sistema {
             System.out.printf("Status: %s\n", Alocacao_status[i]);
             int recursoID = Alocacao_recursoID[i], recursoIdx = Alocacao_recursoIDIdx[i];
             System.out.printf("Recurso: %s\n", Recursos_nome[recursoID]);
-            System.out.printf("Data - Inicio: %02d/%02d/%04d\n", Recursos_dataInicioDia[recursoID][recursoIdx], Recursos_dataInicioMes[recursoID][recursoIdx], Recursos_dataInicioAno[recursoID][recursoIdx]);
-            System.out.printf("Data - Término: %02d/%02d/%04d\n", Recursos_dataTerminoDia[recursoID][recursoIdx], Recursos_dataTerminoMes[recursoID][recursoIdx], Recursos_dataTerminoAno[recursoID][recursoIdx]);
+            System.out.printf("Data - Inicio: %s\n", format.format(Recursos_dataInicio[recursoID][recursoIdx]));
+            System.out.printf("Data - Término: %s\n", format.format(Recursos_dataTermino[recursoID][recursoIdx]));
             System.out.printf("Atividade - Tipo: %s\n", Alocacao_atividadeTipo[i]);
             System.out.printf("Atividade - Título: %s\n", Alocacao_atividadeTitulo[i]);
             System.out.printf("Atividade - Descrição: %s\n", Alocacao_atividadeDescricao[i]);
@@ -621,8 +587,8 @@ public class Sistema {
                 System.out.printf("\t• Atividade - Descrição: %s\n", Alocacao_atividadeDescricao[i]);
                 System.out.printf("\t• Atividade - Material de apoio: %s\n", Alocacao_atividadeMaterial[i]);
                 System.out.printf("\t• Alocação - Status: %s\n", Alocacao_status[i]);
-                System.out.printf("\t• Alocação - Data início: %02d/%02d/%04d\n", Recursos_dataInicioDia[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]], Recursos_dataInicioMes[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]], Recursos_dataInicioAno[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]]);
-                System.out.printf("\t• Alocação - Data término: %02d/%02d/%04d\n", Recursos_dataTerminoDia[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]], Recursos_dataTerminoMes[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]], Recursos_dataTerminoAno[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]]);
+                System.out.printf("\t• Alocação - Data início: %s\n", format.format(Recursos_dataInicio[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]]));
+                System.out.printf("\t• Alocação - Data término: %s\n", format.format(Recursos_dataTermino[Alocacao_recursoID[i]][Alocacao_recursoIDIdx[i]]));
                 System.out.printf("\t• Alocação - Responsável: %s - %s\n", Alocacao_responsavelTipo[i], (Alocacao_responsavelTipo[i].equals("PROFESSOR") ? Professores_nome[Alocacao_responsavelID[i]] : (Alocacao_responsavelTipo[i].equals("MESTRANDO") ? Mestrandos_nome[Alocacao_responsavelID[i]] : Doutorandos_nome[Alocacao_responsavelID[i]])));
                 System.out.printf("\t• Participantes - Tipo: %s\n", Alocacao_atividadeParticipantesTipo[i]);
                 System.out.print("\t• Participantes: ");
@@ -703,7 +669,7 @@ public class Sistema {
         scanner.nextLine();
     }
 
-	public static void main(String[] args){
+	public static void main(String[] args) throws ParseException {
 		Sistema sis = new Sistema();
 		Scanner scanner = new Scanner(System.in);
 
@@ -716,12 +682,8 @@ public class Sistema {
 			System.out.print("Nome do recurso: ");
 			Recursos_nome[i] = scanner.nextLine().toLowerCase();
 		}
-		Recursos_dataInicioDia = new int[qntdRecursos][0];
-		Recursos_dataInicioMes = new int[qntdRecursos][0];
-		Recursos_dataInicioAno = new int[qntdRecursos][0];
-		Recursos_dataTerminoDia = new int[qntdRecursos][0];
-		Recursos_dataTerminoMes = new int[qntdRecursos][0];
-		Recursos_dataTerminoAno = new int[qntdRecursos][0];
+		Recursos_dataInicio = new Date[qntdRecursos][0];
+		Recursos_dataTermino = new Date[qntdRecursos][0];
         Recursos_alocacaoID = new int[qntdRecursos][0];
 
 		boolean running = true;
@@ -748,6 +710,7 @@ public class Sistema {
 			System.out.print("-Digite o numero da opção desejada:\n> ");
 
 			int sel = scanner.nextInt();
+			scanner.nextLine();
 			switch(sel){
 				case 1: sis.cadastrarAluno();
 					break;
@@ -774,14 +737,6 @@ public class Sistema {
                 case 12: running = false;
 					break;
 			}
-/*
-            for(String al : Recursos_nome){
-                System.out.println(al);
-            }
-            for(String al : Alunos_nome){
-                System.out.println(al);
-            }
-*/
 		}
 	}
 }
