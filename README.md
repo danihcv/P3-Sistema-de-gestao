@@ -1,6 +1,6 @@
 # sistemaP3 - Gestão de Recursos
 
-* Padrões utilizados:
+* Padrões utilizados: *
 - Strategy
 - State
 - Prototype
