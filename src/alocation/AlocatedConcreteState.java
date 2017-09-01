@@ -9,6 +9,6 @@ public class AlocatedConcreteState extends AlocationState {
 
     @Override
     AlocationState updateState() {
-        return new FinishedConcreteState();
+        return new FinishedConcreteState(this.name, this.responsible);
     }
 }

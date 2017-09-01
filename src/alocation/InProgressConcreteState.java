@@ -9,6 +9,6 @@ public class InProgressConcreteState extends AlocationState {
 
     @Override
     AlocationState updateState() {
-        return new AlocatedConcreteState();
+        return new AlocatedConcreteState(this.name, this.responsible);
     }
 }
