@@ -9,4 +9,13 @@ public abstract class ResourcePrototype {
     int id;
     String name;
     List<AlocationState> alocations = new LinkedList<>();
+
+    public String getName() {
+        return name;
+    }
+
+    public List<AlocationState> getAlocations() {
+        return alocations;
+    }
+
 }

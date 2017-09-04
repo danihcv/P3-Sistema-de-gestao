@@ -1,14 +1,18 @@
 package alocation;
 
+import resource.ResourcePrototype;
 import user.UserStrategy;
+import work.Work;
+
+import java.util.Date;
 
 public class AlocatedConcreteState extends AlocationState {
-    public AlocatedConcreteState(String name, UserStrategy responsible) {
-        super(name, responsible);
+    public AlocatedConcreteState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
+        super(resource, responsible, begin, end, work);
     }
 
     @Override
-    AlocationState updateState() {
-        return new FinishedConcreteState(this.name, this.responsible);
+    public AlocationState updateState() {
+        return new FinishedConcreteState(this.resource, this.responsible, this.begin, this.end, this.work);
     }
 }

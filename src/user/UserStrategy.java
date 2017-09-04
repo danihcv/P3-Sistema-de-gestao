@@ -8,20 +8,43 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class UserStrategy {
-    private int id;
+    String type;
     private String name;
     private String email;
     private String cpf;
     private List<ResourcePrototype> alocatedResources = new LinkedList<>();
     private List<Work> realizedWorks = new LinkedList<>();
 
-    public UserStrategy(int id, String name, String email, String cpf) {
-        this.id = id;
+    public UserStrategy(String name, String email, String cpf) {
         this.name = name;
         this.email = email;
         this.cpf = cpf;
     }
 
-    abstract boolean canAlocateResource(String resource);
-    abstract boolean canAlocateWork(WorkTypes work);
+    public abstract boolean canAlocateResource();
+    public abstract boolean canAlocateWork(WorkTypes work);
+
+    public String getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getCpf() {
+        return cpf;
+    }
+
+    @Override
+    public String toString() {
+        return "-Tipo: "+ this.type +"\n"+
+                "-CPF: "+ this.cpf +"\n"+
+                "-Nome: "+ this.name +"\n"+
+                "-E-mail: "+ this.email +"\n";
+    }
 }

@@ -1,15 +1,42 @@
 package alocation;
 
+import resource.ResourcePrototype;
 import user.UserStrategy;
+import work.Work;
+
+import java.util.Date;
 
 public abstract class AlocationState {
-    String name;
+    ResourcePrototype resource;
     UserStrategy responsible;
+    Date begin, end;
+    Work work;
 
-    public AlocationState(String name, UserStrategy responsible) {
-        this.name = name;
+    AlocationState() {}
+
+    public AlocationState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
+        this.resource = resource;
         this.responsible = responsible;
+        this.begin = begin;
+        this.end = end;
+        this.work = work;
     }
 
-    abstract AlocationState updateState();
+    public abstract AlocationState updateState();
+
+    public ResourcePrototype getResource() {
+        return resource;
+    }
+
+    public UserStrategy getResponsible() {
+        return responsible;
+    }
+
+    public Date getBegin() {
+        return begin;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
 }

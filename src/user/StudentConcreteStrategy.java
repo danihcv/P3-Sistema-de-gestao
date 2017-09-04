@@ -3,17 +3,18 @@ package user;
 import work.WorkTypes;
 
 public class StudentConcreteStrategy extends UserStrategy {
-    public StudentConcreteStrategy(int id, String name, String email, String cpf) {
-        super(id, name, email, cpf);
+    public StudentConcreteStrategy(String name, String email, String cpf) {
+        super(name, email, cpf);
+        this.type = "ALUNO";
     }
 
     @Override
-    boolean canAlocateResource(String resource) {
+    public boolean canAlocateResource() {
         return false;
     }
 
     @Override
-    boolean canAlocateWork(WorkTypes work) {
+    public boolean canAlocateWork(WorkTypes work) {
         return false;
     }
 }
