@@ -16,13 +16,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import static resource.ResourcesType.*;
+
 public class MainSystem {
     private DateFormat format = new SimpleDateFormat("dd/MM/yyyy' 'HH:mm");
 
-    private ResourcePrototype prototypeProjector = new ProjectorConcretePrototype();
-    private ResourcePrototype prototypeLab = new LabConcretePrototype();
-    private ResourcePrototype prototypeClass = new ClassRoomConcretePrototype();
-    private ResourcePrototype prototypeAuditorium = new AuditoriumConcretePrototype();
+    private ProjectorConcretePrototype prototypeProjector = new ProjectorConcretePrototype();
+    private LabConcretePrototype prototypeLab = new LabConcretePrototype();
+    private ClassRoomConcretePrototype prototypeClass = new ClassRoomConcretePrototype();
+    private AuditoriumConcretePrototype prototypeAuditorium = new AuditoriumConcretePrototype();
 
     private List<UserStrategy> users = new LinkedList<>();
     private List<AlocationState> alocations = new LinkedList<>();
@@ -45,13 +47,14 @@ public class MainSystem {
             System.out.println("3. Cadastrar doutorando");
             System.out.println("4. Cadastrar professor");
             System.out.println("5. Cadastrar pesquisador");
-            System.out.println("6. Alocar recurso");
-            System.out.println("7. Editar alocação");
-            System.out.println("8. Ver alocações");
-            System.out.println("9. Consultar usuário");
-            System.out.println("10. Consultar recurso");
-            System.out.println("11. Relatório da unidade");
-            System.out.println("12. Sair");
+            System.out.println("6. Cadastrar recurso");
+            System.out.println("7. Alocar recurso");
+            System.out.println("8. Editar alocação");
+            System.out.println("9. Ver alocações");
+            System.out.println("10. Consultar usuário");
+            System.out.println("11. Consultar recurso");
+            System.out.println("12. Relatório da unidade");
+            System.out.println("13. Sair");
 
             System.out.print("-Digite o numero da opção desejada:\n> ");
 
@@ -61,36 +64,127 @@ public class MainSystem {
                 case 1:
                     this.cadastrarUser("ALUNO");
                     break;
-            case 2: this.cadastrarUser("MESTRANDO");
-                break;
-            case 3: this.cadastrarUser("DOUTORANDO");
-                break;
-            case 4: this.cadastrarUser("PROFESSOR");
-                break;
-            case 5: this.cadastrarUser("PESQUISADOR");
-                break;
-            case 6: this.alocarRecurso();
-                break;
+                case 2: this.cadastrarUser("MESTRANDO");
+                    break;
+                case 3: this.cadastrarUser("DOUTORANDO");
+                    break;
+                case 4: this.cadastrarUser("PROFESSOR");
+                    break;
+                case 5: this.cadastrarUser("PESQUISADOR");
+                    break;
+                case 6: this.cadastrarRecurso();
+                    break;
+                case 7: this.alocarRecurso();
+                    break;
                 /*
-            case 7: this.editarRecurso();
-                break;
-            case 8: this.detalhesAlocacoes();
-                break;
+                case 8: this.editarRecurso();
+                    break;
+                case 9: this.detalhesAlocacoes();
+                    break;
                 */
-            case 9: this.consultarUser();
-                break;
+                case 10: this.consultarUser();
+                    break;
+                case 11: this.consultarRecurso();
+                    break;
                 /*
-            case 10: this.consultarRecurso();
-                break;
-            case 11: this.relatorio();
-                break;
+                case 12: this.relatorio();
+                    break;
                 */
-                case 12:
+                case 13:
                     running = false;
                     break;
 
             }
         }
+    }
+
+    private void consultarRecurso() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("\n\n\n\n\n\n\n\n\n\nConsultar Recurso\n");
+
+        System.out.print("-Digite o nome do recurso: ");
+        String name = scan.nextLine();
+        name = name.toLowerCase();
+        ResourcePrototype resource = null;
+        for (ResourcePrototype res : this.resources) {
+            if (res.getName().toLowerCase().equals(name)) {
+                resource = res;
+            }
+        }
+
+        if(resource == null) {
+            System.out.println(">> Não existe recurso com este nome!");
+        } else {
+            System.out.println("--------------------");
+            System.out.printf("ID: %d\n", resource.getId());
+            System.out.printf("Nome: %s\n", resource.getName());
+
+            for(AlocationState aloc : resource.getAlocations()) {
+                System.out.println("\t------------------------------");
+                System.out.printf("\t• Atividade - Título: %s\n", aloc.getWork().getTitle());
+                System.out.printf("\t• Atividade - Descrição: %s\n", aloc.getWork().getDescription());
+                System.out.printf("\t• Atividade - Material de apoio: %s\n", aloc.getWork().getMaterial());
+                System.out.printf("\t• Alocação - Responsável: %s\n", aloc.getResponsible().getName());
+                System.out.printf("\t• Alocação - Status: %s\n", aloc);
+                System.out.printf("\t• Alocação - Data início: %s\n", format.format(aloc.getBegin()));
+                System.out.printf("\t• Alocação - Data término: %s\n", format.format(aloc.getEnd()));
+                System.out.printf("\t• Participantes - Tipo: %s\n", aloc.getWork().getParticipantsType());
+                System.out.printf("\t• Participantes: ");
+                boolean first = true;
+                for(UserStrategy partic : aloc.getWork().getParticipants()){
+                    if(!first){
+                        System.out.print("; ");
+                    } else {
+                        first = false;
+                    }
+                    System.out.println(partic.getName());
+                }
+            }
+            System.out.println("\n");
+        }
+        System.out.println("--------------------");
+        System.out.println("\nAperte ENTER para sair.");
+        scan.nextLine();
+    }
+
+    private void cadastrarRecurso() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("\n\n\n\n\n\n\n\n\n\nCadastrar Recurso\n");
+
+        System.out.println("-Tipos de recurso:");
+        System.out.println("1. Auditório");
+        System.out.println("2. Sala de aula");
+        System.out.println("3. Laboratório");
+        System.out.println("4. Projetor");
+
+        int sel;
+        ResourcePrototype newResource = null;
+        do{
+            System.out.print("-Digite o tipo de recurso que deseja criar: ");
+            sel = Integer.parseInt(scan.nextLine());
+
+            switch (sel) {
+                case 1:
+                    newResource = prototypeAuditorium.clone();
+                    break;
+                case 2:
+                    newResource = prototypeClass.clone();
+                    break;
+                case 3:
+                    newResource = prototypeLab.clone();
+                    break;
+                case 4:
+                    newResource = prototypeProjector.clone();
+                    break;
+            }
+        } while (newResource == null);
+
+        System.out.print("-Digite o nome do recurso: ");
+        String name = scan.nextLine();
+
+        newResource.setId(this.resources.size() + 1);
+        newResource.setName(name);
+        this.resources.add(newResource);
     }
 
     private void alocarRecurso() {
@@ -118,7 +212,7 @@ public class MainSystem {
                 }
             }
             if (responsible == null) {
-                System.out.println(">> Usuário não existe!");
+                System.out.println(">> Usuário inválido!");
             }
         } while (responsible == null);
 
@@ -134,7 +228,7 @@ public class MainSystem {
             }
 
             for (ResourcePrototype res : this.resources) {
-                if (res.getName().equals(nameRes)) {
+                if (res.getName().toLowerCase().equals(nameRes)) {
                     resource = res;
                 }
             }
@@ -145,23 +239,21 @@ public class MainSystem {
 
         Date dataInicio = null, dataTermino = null;
         boolean accept = false;
-        System.out.print("-Digite a data de inicio (dd/MM/yyyy HH:mm): ");
-        String line = scan.nextLine();
         while(!accept) {
             try {
-                dataInicio = format.parse(line);
+                System.out.print("-Digite a data de inicio (dd/MM/yyyy HH:mm): ");
+                dataInicio = format.parse(scan.nextLine());
                 accept = true;
             } catch (ParseException e) {
                 System.out.println(">> Formato errado!");
             }
         }
 
-        System.out.print("-Digite a data de término (dd/MM/yyyy HH:mm): ");
         accept = false;
-        line = scan.nextLine();
         while (!accept) {
             try {
-                dataTermino = format.parse(line);
+                System.out.print("-Digite a data de término (dd/MM/yyyy HH:mm): ");
+                dataTermino = format.parse(scan.nextLine());
                 accept = true;
             } catch (ParseException e) {
                 System.out.println(">> Formato errado!");
@@ -194,10 +286,10 @@ public class MainSystem {
             scan.nextLine();
         }
 
-        System.out.println("-Digite o tipo de atividade ('aula tradicional', 'apresentacao', 'laboratorio')");
         String activityType;
         WorkTypes workType = null;
         do{
+            System.out.print("-Digite o tipo de atividade ('aula tradicional', 'apresentacao', 'laboratorio')");
             activityType = scan.nextLine();
             switch (activityType.toLowerCase()) {
                 case "aula tradicional":
@@ -208,6 +300,9 @@ public class MainSystem {
                     break;
                 case "laboratorio":
                     workType = WorkTypes.laboratorio;
+                    break;
+                default:
+                    System.out.println(">> Tipo errado! Atividades podem ser 'aula tradicional', 'apresentacao' ou 'laboratorio'.");
                     break;
             }
         } while (workType == null);
@@ -260,9 +355,11 @@ public class MainSystem {
             } while (!accept);
         }
 
-        Work newWork = new Work(workType, workTitle, workDescription, workMaterial, participants);
+        Work newWork = new Work(workType, workTitle, workDescription, workMaterial, particType, participants);
         newAlocation = new InProgressConcreteState(resource, responsible, dataInicio, dataTermino, newWork);
-        this.alocations.add(newAlocation.updateState());
+        newAlocation = newAlocation.updateState();
+        this.alocations.add(newAlocation);
+        resource.addAlocation(newAlocation);
     }
 
     private void consultarUser() {
@@ -316,6 +413,8 @@ public class MainSystem {
                 break;
             default:
                 System.out.println("ERRO AO CADASTRAR!");
+                System.out.println("APERTE ENTER PARA CONTINUAR");
+                scan.nextLine();
                 break;
         }
     }

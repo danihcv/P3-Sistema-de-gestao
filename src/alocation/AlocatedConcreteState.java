@@ -15,4 +15,9 @@ public class AlocatedConcreteState extends AlocationState {
     public AlocationState updateState() {
         return new FinishedConcreteState(this.resource, this.responsible, this.begin, this.end, this.work);
     }
+
+    @Override
+    public String toString() {
+        return "Alocado";
+    }
 }

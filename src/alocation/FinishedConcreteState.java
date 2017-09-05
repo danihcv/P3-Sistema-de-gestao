@@ -15,4 +15,9 @@ public class FinishedConcreteState extends AlocationState {
     public AlocationState updateState() {
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "Finalizado";
+    }
 }

@@ -19,4 +19,9 @@ public class InProgressConcreteState extends AlocationState {
     public AlocationState updateState() {
         return new AlocatedConcreteState(this.resource, this.responsible, this.begin, this.end, this.work);
     }
+
+    @Override
+    public String toString() {
+        return "Em progresso";
+    }
 }

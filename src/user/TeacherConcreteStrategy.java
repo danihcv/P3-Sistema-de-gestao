@@ -15,6 +15,6 @@ public class TeacherConcreteStrategy extends UserStrategy {
 
     @Override
     public boolean canAlocateWork(WorkTypes work) {
-        return false;
+        return true;
     }
 }

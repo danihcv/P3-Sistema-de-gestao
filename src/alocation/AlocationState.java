@@ -39,4 +39,12 @@ public abstract class AlocationState {
     public Date getEnd() {
         return end;
     }
+
+    public Work getWork() {
+        return work;
+    }
+
+    public void setWork(Work work) {
+        this.work = work;
+    }
 }

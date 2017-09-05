@@ -15,6 +15,6 @@ public class DoctorateConcreteStrategy extends UserStrategy {
 
     @Override
     public boolean canAlocateWork(WorkTypes work) {
-        return false;
+        return work == WorkTypes.apresentacao;
     }
 }
