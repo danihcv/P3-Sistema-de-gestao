@@ -18,20 +18,20 @@ public abstract class ResourcePrototype {
         this.id = id;
     }
 
-    public void setAlocations(List<AlocationState> alocations) {
-        this.alocations = alocations;
-    }
-
     public List<AlocationState> getAlocations() {
         return alocations;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAlocations(List<AlocationState> alocations) {
+        this.alocations = alocations;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public abstract ResourcePrototype clone();

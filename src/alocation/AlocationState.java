@@ -14,7 +14,7 @@ public abstract class AlocationState {
 
     AlocationState() {}
 
-    public AlocationState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
+    AlocationState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
         this.resource = resource;
         this.responsible = responsible;
         this.begin = begin;

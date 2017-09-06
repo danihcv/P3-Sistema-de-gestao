@@ -9,7 +9,7 @@ public class AuditoriumConcretePrototype extends ResourcePrototype {
         this.alocations = new LinkedList<>();
     }
 
-    AuditoriumConcretePrototype(AuditoriumConcretePrototype prot) {
+    private AuditoriumConcretePrototype(AuditoriumConcretePrototype prot) {
         this.id = prot.getId();
         this.name = prot.getName();
         this.alocations = prot.getAlocations();

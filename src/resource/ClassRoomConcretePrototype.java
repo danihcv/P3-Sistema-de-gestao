@@ -9,7 +9,7 @@ public class ClassRoomConcretePrototype extends ResourcePrototype {
         this.alocations = new LinkedList<>();
     }
 
-    ClassRoomConcretePrototype(ClassRoomConcretePrototype prot) {
+    private ClassRoomConcretePrototype(ClassRoomConcretePrototype prot) {
         this.id = prot.getId();
         this.name = prot.getName();
         this.alocations = prot.getAlocations();

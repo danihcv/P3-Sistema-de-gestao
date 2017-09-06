@@ -9,7 +9,7 @@ public class ProjectorConcretePrototype extends ResourcePrototype {
         this.alocations = new LinkedList<>();
     }
 
-    ProjectorConcretePrototype(ProjectorConcretePrototype prot) {
+    private ProjectorConcretePrototype(ProjectorConcretePrototype prot) {
         this.id = prot.getId();
         this.name = prot.getName();
         this.alocations = prot.getAlocations();

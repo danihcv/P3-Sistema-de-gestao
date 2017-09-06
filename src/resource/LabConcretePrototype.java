@@ -9,7 +9,7 @@ public class LabConcretePrototype extends ResourcePrototype {
         this.alocations = new LinkedList<>();
     }
 
-    public LabConcretePrototype(LabConcretePrototype prot) {
+    private LabConcretePrototype(LabConcretePrototype prot) {
         this.id = prot.getId();
         this.name = prot.getName();
         this.alocations = prot.getAlocations();

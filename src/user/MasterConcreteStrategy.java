@@ -3,7 +3,7 @@ package user;
 import work.WorkTypes;
 
 public class MasterConcreteStrategy extends UserStrategy {
-    public MasterConcreteStrategy(String name, String email, String cpf) {
+    public MasterConcreteStrategy(String name, String email, int cpf) {
         super(name, email, cpf);
         this.type = "MESTRANDO";
     }
