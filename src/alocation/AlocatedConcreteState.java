@@ -7,13 +7,13 @@ import work.Work;
 import java.util.Date;
 
 public class AlocatedConcreteState extends AlocationState {
-    public AlocatedConcreteState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
+    AlocatedConcreteState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
         super(resource, responsible, begin, end, work);
     }
 
     @Override
     public AlocationState updateState() {
-        return new FinishedConcreteState(this.resource, this.responsible, this.begin, this.end, this.work);
+        return new InProgressConcreteState(this.resource, this.responsible, this.begin, this.end, this.work);
     }
 
     @Override

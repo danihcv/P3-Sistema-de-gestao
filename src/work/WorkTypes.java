@@ -1,7 +1,7 @@
 package work;
 
 public enum WorkTypes {
-    aulaTradicional,
+    aula_Tradicional,
     apresentacao,
     laboratorio
 }

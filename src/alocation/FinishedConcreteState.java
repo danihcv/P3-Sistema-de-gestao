@@ -7,7 +7,7 @@ import work.Work;
 import java.util.Date;
 
 public class FinishedConcreteState extends AlocationState {
-    public FinishedConcreteState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
+    FinishedConcreteState(ResourcePrototype resource, UserStrategy responsible, Date begin, Date end, Work work) {
         super(resource, responsible, begin, end, work);
     }
 
@@ -18,6 +18,6 @@ public class FinishedConcreteState extends AlocationState {
 
     @Override
     public String toString() {
-        return "Finalizado";
+        return "Concluido";
     }
 }

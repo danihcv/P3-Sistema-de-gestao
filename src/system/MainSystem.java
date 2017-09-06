@@ -1,8 +1,7 @@
 package system;
 
 import alocation.AlocationState;
-import alocation.InProgressConcreteState;
-import com.sun.org.apache.xpath.internal.SourceTree;
+import alocation.InProcessConcreteState;
 import resource.*;
 import user.*;
 import work.Work;
@@ -16,9 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-import static resource.ResourcesType.*;
-
-public class MainSystem {
+class MainSystem {
     private DateFormat format = new SimpleDateFormat("dd/MM/yyyy' 'HH:mm");
 
     private ProjectorConcretePrototype prototypeProjector = new ProjectorConcretePrototype();
@@ -30,10 +27,10 @@ public class MainSystem {
     private List<AlocationState> alocations = new LinkedList<>();
     private List<ResourcePrototype> resources = new LinkedList<>();
 
-    public MainSystem() {
+    MainSystem() {
     }
 
-    public void menu() {
+    void menu() {
         boolean running = true;
 
         while (running) {
@@ -76,26 +73,149 @@ public class MainSystem {
                     break;
                 case 7: this.alocarRecurso();
                     break;
-                /*
-                case 8: this.editarRecurso();
+                case 8: this.editarAlocacao();
                     break;
                 case 9: this.detalhesAlocacoes();
                     break;
-                */
                 case 10: this.consultarUser();
                     break;
                 case 11: this.consultarRecurso();
                     break;
-                /*
                 case 12: this.relatorio();
                     break;
-                */
                 case 13:
                     running = false;
                     break;
 
             }
         }
+    }
+
+    private void relatorio() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\tRelatório da unidade acadêmica\n");
+
+        System.out.println("--------------------");
+        System.out.printf("• Número de usuários cadastrados: %d\n", this.users.size());
+        System.out.println("• Recursos:");
+        int procAloc = 0, alocado = 0, andamento = 0, concluido = 0;
+        for (AlocationState aloc : this.alocations) {
+            switch (aloc.toString().toLowerCase()) {
+                case "em processo de alocação":
+                    procAloc++;
+                    break;
+                case "alocado":
+                    alocado++;
+                    break;
+                case "em andamento":
+                    andamento++;
+                    break;
+                case "concluido":
+                    concluido++;
+                    break;
+            }
+        }
+        System.out.printf("\t- Em processo de alocação: %d\n", procAloc);
+        System.out.printf("\t- Alocados: %d\n", alocado);
+        System.out.printf("\t- Em andamento: %d\n", andamento);
+        System.out.printf("\t- Concluídos: %d\n", concluido);
+        System.out.printf("• Número total de alocações: %d\n", this.alocations.size());
+        System.out.println("• Atividades:");
+        int tradicional = 0, apresentacao = 0, laboratorio = 0;
+        for (AlocationState aloc : this.alocations) {
+            switch (aloc.getWork().getType().toString().toLowerCase()) {
+                case "aula_tradicional":
+                    tradicional++;
+                    break;
+                case "apresentacao":
+                    apresentacao++;
+                    break;
+                case "laboratorio":
+                    laboratorio++;
+                    break;
+            }
+        }
+        System.out.printf("\t- Aula tradicional: %d\n", tradicional);
+        System.out.printf("\t- Apresentações: %d\n", apresentacao);
+        System.out.printf("\t- Laboratório: %d\n", laboratorio);
+        System.out.println("--------------------");
+        System.out.print("\nAperte ENTER para sair.");
+        scan.nextLine();
+    }
+
+    private void detalhesAlocacoes() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\tVer alocações\n");
+
+        System.out.println("• Lista detalhada de todas as alocações já feitas:\n");
+        int i = 0;
+        for(AlocationState aloc : this.alocations){
+            System.out.println("-------------------------");
+            System.out.printf("ID: %d\n", i++);
+            System.out.printf("Status: %s\n", aloc);
+            System.out.printf("Recurso: %s\n", aloc.getResource().getName());
+            System.out.printf("Data - Inicio: %s\n", format.format(aloc.getBegin()));
+            System.out.printf("Data - Término: %s\n", format.format(aloc.getEnd()));
+            System.out.printf("Atividade - Tipo: %s\n", aloc.getWork().getType().toString().toUpperCase());
+            System.out.printf("Atividade - Título: %s\n", aloc.getWork().getTitle());
+            System.out.printf("Atividade - Descrição: %s\n", aloc.getWork().getDescription());
+            System.out.printf("Responsável: %s - %s\n", aloc.getResponsible().getType(), aloc.getResponsible().getName());
+            System.out.printf("Participantes - Tipo: %s\n", aloc.getWork().getParticipantsType());
+            System.out.printf("Participantes: ");
+            boolean first= true;
+            for(UserStrategy partic : aloc.getWork().getParticipants()){
+                if(!first){
+                    System.out.print("; ");
+                } else {
+                    first = false;
+                }
+                System.out.printf("%s", partic.getName());
+            }
+            System.out.println();
+        }
+        System.out.print("\nAperte ENTER para sair.");
+        scan.nextLine();
+    }
+
+    private void editarAlocacao() {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\tEditar alocação\n");
+        System.out.println("• Lista de alocações não concluídas:\n");
+        System.out.println("___________________________________________________________________________________");
+        System.out.println(" ID |       Data       |       Status       |    Recurso    |  Responsável  |   Atividade");
+        int i = 0;
+        for(AlocationState aloc : this.alocations){
+            if(!aloc.toString().equals("Concluido")) {
+                System.out.printf(" %02d | %s | %s | %s | %s | %s\n", i++, format.format(aloc.getBegin()), aloc, aloc.getResource().getName(), aloc.getResponsible().getType(), aloc.getWork().getType().toString().toUpperCase());
+            }
+        }
+        System.out.println("-----------------------------------------------------------------------------------");
+
+        boolean editing = true;
+        do{
+            System.out.print("\n-Digite o ID da alocação a ser atualizada ou digite -1 para sair: ");
+            int sel = scan.nextInt();
+            scan.nextLine();
+            if(sel == -1) {
+                editing = false;
+            } else if(sel >= this.alocations.size()){
+                System.out.println("ID inválido!");
+            } else if(this.alocations.get(sel).toString().equals("Concluido")){
+                System.out.println("A alocação selecionada já se encontra concluída!");
+            } else{
+                System.out.print("-Você deseja atualizar o status de '"+ this.alocations.get(sel) +"' para '"+ this.alocations.get(sel).updateState() +"'? (sim / nao)\n> ");
+                String str = scan.nextLine();
+                if(str.toLowerCase().charAt(0) == 's'){
+                    this.alocations.set(sel, this.alocations.get(sel).updateState());
+                    editing = false;
+                    System.out.println("Edição concluída!");
+                } else{
+                    System.out.println("Edição cancelada!");
+                }
+                System.out.println("APERTE ENTER PARA CONTINUAR");
+                scan.nextLine();
+            }
+        }while(editing);
     }
 
     private void consultarRecurso() {
@@ -190,7 +310,7 @@ public class MainSystem {
     private void alocarRecurso() {
         System.out.println("\n\n\n\n\n\n\n\n\n\nAlocar Recurso\n");
 
-        AlocationState newAlocation = new InProgressConcreteState();
+        AlocationState newAlocation = new InProcessConcreteState();
         Scanner scan = new Scanner(System.in);
         String cpf;
 
@@ -293,7 +413,7 @@ public class MainSystem {
             activityType = scan.nextLine();
             switch (activityType.toLowerCase()) {
                 case "aula tradicional":
-                    workType = WorkTypes.aulaTradicional;
+                    workType = WorkTypes.aula_Tradicional;
                     break;
                 case "apresentacao":
                     workType = WorkTypes.apresentacao;
@@ -356,7 +476,7 @@ public class MainSystem {
         }
 
         Work newWork = new Work(workType, workTitle, workDescription, workMaterial, particType, participants);
-        newAlocation = new InProgressConcreteState(resource, responsible, dataInicio, dataTermino, newWork);
+        newAlocation = new InProcessConcreteState(resource, responsible, dataInicio, dataTermino, newWork);
         newAlocation = newAlocation.updateState();
         this.alocations.add(newAlocation);
         resource.addAlocation(newAlocation);
