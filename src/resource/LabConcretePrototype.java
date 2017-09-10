@@ -19,4 +19,9 @@ public class LabConcretePrototype extends ResourcePrototype {
     public ResourcePrototype clone() {
         return new LabConcretePrototype(this);
     }
+
+    @Override
+    public String toString() {
+        return "Laboratório";
+    }
 }

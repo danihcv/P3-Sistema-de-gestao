@@ -19,4 +19,9 @@ public class ProjectorConcretePrototype extends ResourcePrototype {
     public ResourcePrototype clone() {
         return new ProjectorConcretePrototype(this);
     }
+
+    @Override
+    public String toString() {
+        return "Projetor";
+    }
 }

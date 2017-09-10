@@ -19,4 +19,9 @@ public class AuditoriumConcretePrototype extends ResourcePrototype {
     public ResourcePrototype clone() {
         return new AuditoriumConcretePrototype(this);
     }
+
+    @Override
+    public String toString() {
+        return "Auditório";
+    }
 }

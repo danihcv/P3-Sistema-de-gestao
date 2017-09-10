@@ -1,6 +1,5 @@
 package user;
 
-import alocation.AlocationState;
 import resource.ResourcePrototype;
 import work.Work;
 import work.WorkTypes;
@@ -12,11 +11,11 @@ public abstract class UserStrategy {
     String type;
     private String name;
     private String email;
-    private int cpf;
+    private String cpf;
     private List<ResourcePrototype> alocatedResources = new LinkedList<>();
     private List<Work> realizedWorks = new LinkedList<>();
 
-    public UserStrategy(String name, String email, int cpf) {
+    public UserStrategy(String name, String email, String cpf) {
         this.name = name;
         this.email = email;
         this.cpf = cpf;
@@ -33,11 +32,7 @@ public abstract class UserStrategy {
         return name;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public int getCpf() {
+    public String getCpf() {
         return cpf;
     }
 
@@ -78,7 +73,7 @@ public abstract class UserStrategy {
                 }
             }
             if (add) {
-                realizedNames.add(work.getTitle());
+                realizedNames.add(work.getTitle() +" - "+ work.getDescription());
             }
         }
         for(String str : realizedNames) {

@@ -19,4 +19,9 @@ public class ClassRoomConcretePrototype extends ResourcePrototype {
     public ResourcePrototype clone() {
         return new ClassRoomConcretePrototype(this);
     }
+
+    @Override
+    public String toString() {
+        return "Sala de aula";
+    }
 }

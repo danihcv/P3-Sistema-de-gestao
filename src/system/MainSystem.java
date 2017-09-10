@@ -113,18 +113,18 @@ class MainSystem {
         type = type.toUpperCase();
         Scanner scan = new Scanner(System.in);
         System.out.println("\n\n\n\n\n\n\n\n\n\nCadastrar Usuário\n");
-        int cpf;
+        String cpf;
         do {
             System.out.print("-Digite o CPF do " + type + ": ");
-            cpf = Integer.parseInt(scan.nextLine());
+            cpf = scan.nextLine();
             for (UserStrategy user : this.users) {
-                if (user.getCpf() == cpf) {
-                    cpf = -1;
+                if (user.getCpf().equals(cpf)) {
+                    cpf = null;
                     System.out.println(">> Este CPF já está associado a um usuário!");
                     break;
                 }
             }
-        } while (cpf == -1);
+        } while (cpf == null);
         System.out.print("-Digite o nome do " + type + ": ");
         String name = scan.nextLine();
         System.out.print("-Digite o e-mail do " + type + ": ");
@@ -214,18 +214,18 @@ class MainSystem {
 
         AlocationState newAlocation = new InProcessConcreteState();
         Scanner scan = new Scanner(System.in);
-        int cpf;
+        String cpf;
 
         UserStrategy responsible = null;
         do {
             System.out.print("-Digite o CPF do responsável pelo recurso: ");
-            cpf = Integer.parseInt(scan.nextLine());
+            cpf = scan.nextLine();
 
-            if (cpf == -1)
+            if (cpf.equals("-1"))
                 return;
 
             for (UserStrategy user : this.users) {
-                if (user.getCpf() == cpf) {
+                if (user.getCpf().equals(cpf)) {
                     if (user.canAlocateResource())
                         responsible = user;
                     else {
@@ -367,14 +367,31 @@ class MainSystem {
         List<UserStrategy> participants = new LinkedList<>();
         for (int i = 0; i < qntPartic && i < users.size(); i++) {
             accept = true;
+            validate:
             do {
-                System.out.printf("-Digite o CPF do participante %d: ", i + 1);
-                cpf = Integer.parseInt(scan.nextLine());
-                if(cpf == -1) {
-                    break;
-                }
+                do {
+                    System.out.printf("-Digite o CPF do participante %d: ", i + 1);
+                    cpf = scan.nextLine();
+
+                    if (cpf.equals("-1")) {
+                        break validate;
+                    }
+
+                    boolean exists = false;
+                    for (UserStrategy user : this.users) {
+                        if (user.getCpf().equals(cpf)) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists) {
+                        System.out.println(">> Não existe usuário com este CPF!");
+                        cpf = null;
+                    }
+                } while (cpf == null);
+
                 for (UserStrategy user : participants) {
-                    if (user.getCpf() == cpf) {
+                    if (user.getCpf().equals(cpf)) {
                         System.out.println(">> Este usuário já está inscrito nesta atividade!");
                         accept = false;
                         break;
@@ -382,7 +399,7 @@ class MainSystem {
                 }
                 if (accept) {
                     for (UserStrategy user : this.users) {
-                        if (user.getCpf() == cpf) {
+                        if (user.getCpf().equals(cpf)) {
                             if (user.getType().equals(particType)) {
                                 participants.add(user);
                                 break;
@@ -402,10 +419,11 @@ class MainSystem {
         Work newWork = new Work(workType, workTitle, workDescription, workMaterial, particType, participants);
         newAlocation = new InProcessConcreteState(resource, responsible, dataInicio, dataTermino, newWork);
         newAlocation = newAlocation.updateState();
+
+        this.alocations.add(newAlocation);
         resource.addAlocation(newAlocation);
         responsible.addAlocatedResource(resource);
         responsible.addRealizedWork(newWork);
-        this.alocations.add(newAlocation);
     }
 
     private void editarAlocacao() throws NumberFormatException {
@@ -426,7 +444,6 @@ class MainSystem {
         do {
             System.out.print("\n-Digite o ID da alocação a ser atualizada ou digite -1 para sair: ");
             int sel = Integer.parseInt(scan.nextLine());
-            scan.nextLine();
             if (sel == -1) {
                 editing = false;
             } else if (sel >= this.alocations.size()) {
@@ -438,11 +455,26 @@ class MainSystem {
                 String str = scan.nextLine();
                 if (str.toLowerCase().charAt(0) == 's') {
                     this.alocations.set(sel, this.alocations.get(sel).updateState());
-                    editing = false;
+
+                    String refName = this.alocations.get(sel).getResource().getName();
+                    for (ResourcePrototype res : this.resources) {
+                        if (res.getName().equals(refName)) {
+                            for (int j = 0; j < res.getAlocations().size(); j++) {
+                                AlocationState aloc = res.getAlocations().get(j);
+                                Date refBegin = this.alocations.get(sel).getBegin();
+                                Date refEnd = this.alocations.get(sel).getEnd();
+                                String refResp = this.alocations.get(sel).getResponsible().getCpf();
+                                if (aloc.getBegin() == refBegin && aloc.getEnd() == refEnd && aloc.getResponsible().getCpf().equals(refResp)) {
+                                    res.getAlocations().set(j, aloc.updateState());
+                                }
+                            }
+                        }
+                    }
                     System.out.println("Edição concluída!");
                 } else {
                     System.out.println("Edição cancelada!");
                 }
+                editing = false;
                 System.out.println("APERTE ENTER PARA CONTINUAR");
                 scan.nextLine();
             }
@@ -487,11 +519,11 @@ class MainSystem {
         Scanner scan = new Scanner(System.in);
         System.out.println("\n\n\n\n\n\n\n\n\n\nConsultar Usuário\n");
         System.out.print("-Digite o CPF do usuário: ");
-        int cpf = Integer.parseInt(scan.nextLine());
+        String cpf = scan.nextLine();
 
         boolean ans = false;
         for (UserStrategy user : this.users) {
-            if (user.getCpf() == cpf) {
+            if (user.getCpf().equals(cpf)) {
                 System.out.println(user);
                 ans = true;
             }
@@ -524,6 +556,7 @@ class MainSystem {
         } else {
             System.out.println("--------------------");
             System.out.printf("ID: %d\n", resource.getId());
+            System.out.printf("Tipo: %s\n", resource);
             System.out.printf("Nome: %s\n", resource.getName());
 
             for (AlocationState aloc : resource.getAlocations()) {
